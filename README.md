@@ -2,10 +2,10 @@
  A basic template for using ThreeJS
 
 
-Runing the Development web-page: npm run dev
-Runing a Build into "dist": npm run build
-Runing a preview of the Dist folder: npm run preview
-Deply to the github page: npm run deploy
+- Running the Development web-page: npm run dev
+- Running a Build into "dist": npm run build
+- Running a preview of the Dist folder: npm run preview
+- Deploy to the github page: npm run deploy
 
 Github page: https://npg-media.github.io/ThreeJS-BasicTemplate/
 
@@ -17,7 +17,7 @@ To deploy manually:
 - Push the commit as a subtree with the name "build" to avoid overriding the main
 - Github page will be updated automatically from this branch
 
-
-git add dist -f
-git commit -m "Building dist to github page"
-git subtree push --prefix dist origin build
+Git Commands:
+- git add dist -f
+- git commit -m "Building dist to github page"
+- git subtree push --prefix dist origin build
