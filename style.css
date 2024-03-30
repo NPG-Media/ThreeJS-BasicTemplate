@@ -23,15 +23,35 @@ canvas {
 }
 
 #smallText {
+  display: block;
   font-size: 13pt;
   font-weight: normal;
+  text-decoration-thickness: 0px;
+  pointer-events: all;
+}
+
+a:link { 
+  color: #2F394D;
+  text-decoration: none; 
+} 
+a:visited { 
+  color: #2F394D;
+  text-decoration: none; 
+} 
+a:hover { 
+  text-decoration:none;
+  font-weight:bolder;
+  color: #504afb;
+} 
+a:active { 
+  text-decoration: none; 
 }
 
 .porchelogo
 {
   position: absolute;
-  bottom: 30pt;
-  right: 30pt;
+  bottom: 30px;
+  right: 30px;
   margin: auto;
   width: 100pt;
   height: 100pt;

@@ -100,13 +100,13 @@ scene.add(modelScene);
 // Use the orbital controls by passing it the scene and renderer dom element.
 // It uses the dom element to listen to mouse events, so it updates.
 
+
+
 const orbit_controls = new OrbitControls(camera, renderer.domElement);
 orbit_controls.enablePan = false;
 orbit_controls.enableDamping = true;
-orbit_controls.autoRotate = true;
-orbit_controls.autoRotateSpeed = 3;
 orbit_controls.minDistance = 3;
-orbit_controls.maxDistance = 10;
+orbit_controls.maxDistance = 18;
 
 // This is called when the window is resized. In here we want to set the aspect ratio
 // and the window size again.
