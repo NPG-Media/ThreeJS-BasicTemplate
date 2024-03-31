@@ -2,15 +2,17 @@ import "../style.css";
 import * as THREE from "three";
 
 // To get the Orbital controls, import it from three
+import { GUI } from "three/addons/libs/lil-gui.module.min.js"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader"
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { GroundProjectedSkybox } from "three/examples/jsm/objects/GroundProjectedSkybox.js";
 
 
 // First make a scene, this is where all 3D geometry is put.
 const scene = new THREE.Scene();
-// We make a new scene for the models, so that we can transform all these models separately.
 const modelScene = new THREE.Scene();
+// We make a new scene for the models, so that we can transform all these models separately.
 
 // Camera Settings
 
@@ -29,35 +31,86 @@ camera.position.setX(xOffset);
 camera.position.setY(yOffset);
 camera.position.setZ(zOffset);
 
+
+let skybox;
+
 // Make the HDRI
-const Hdri = new RGBELoader();
-Hdri.load("./assets/hdris/studio.hdr", function (hdri) {
-  hdri.mapping = THREE.EquirectangularReflectionMapping;
+let outdoorHdriOut;
+const outdoorHdriLoader = new RGBELoader();
+outdoorHdriLoader.load("./assets/hdris/road3.hdr", function (outdoorHdri) {
+  outdoorHdriOut = outdoorHdri;
+  outdoorHdri.mapping = THREE.EquirectangularReflectionMapping;
+  
+  // Make grounded Skybox
+  skybox = new GroundProjectedSkybox(outdoorHdri);
+  skybox.scale.set(20,20,20);
+  skybox.height = 2;
+  skybox.material.toneMapped = false;
+  //setOutdoor();
+});
+
+let studioHdriOut;
+const studioHdriLoader = new RGBELoader();
+studioHdriLoader.load("./assets/hdris/studio.hdr", function (studioHdri) {
+  studioHdriOut = studioHdri;
+  studioHdri.mapping = THREE.EquirectangularReflectionMapping;
+  
+  setWhite();  
+})
+
+
+
+// GUI
+
+const params = {
+  enabled: false
+}
+
+
+function setOutdoor() {
+
+  scene.environment = outdoorHdriOut;
+  scene.background = null;
+  renderer.toneMappingExposure = 5;
+  scene.add(skybox);
+}
+
+
+function setWhite() {
   // We want the color of the background to be a constant white.
   // If we wanted the color of the HDRI texture on the background,
   // we would set the background to the hdri as well.
-  scene.background = new THREE.Color(0xFFFFFF);
-
   // The environment is the light that is cast onto the model.
   // We want the HDRI to light the model, to we set this as the HDRI.
 
-  scene.environment = hdri;
+  scene.remove( skybox );
+  scene.environment = studioHdriOut;
+  scene.background = new THREE.Color( 0xffffff );
+  renderer.toneMappingExposure = 7;
 
-  // Set mapping
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 5;
-})
+}
 
+const gui = new GUI();
+				gui.add( params, 'enabled' ).name( "Background" ).onChange( function ( value ) {
+					if ( value ) {
+						setOutdoor();
+					}
+					else {
+            setWhite();
+					}
+				} );
+				gui.open();
 
 // Renderer
 
 // Make the renderer, and give it the HTML element we wish the render to take place.
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector("#bg")
-})
+});
 
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.BasicShadowMap;
+// Set mapping
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 5;
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -73,8 +126,9 @@ modelLoader.load(modelPath, function (data) {
   
   const model = data.scene;
 
-  modelScene.translateY(-0.6);
+  modelScene.translateY(0);
   modelScene.translateX(-0.1);
+  modelScene.rotateY(1);
   modelScene.add(model);
 
 }, undefined, function () {
@@ -107,6 +161,7 @@ orbit_controls.enablePan = false;
 orbit_controls.enableDamping = true;
 orbit_controls.minDistance = 3;
 orbit_controls.maxDistance = 18;
+orbit_controls.maxPolarAngle = THREE.MathUtils.degToRad( 87 );
 
 // This is called when the window is resized. In here we want to set the aspect ratio
 // and the window size again.
